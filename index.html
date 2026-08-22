@@ -1,236 +1,529 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SONIC</title>
+    <title>SONIC: SECRET ADVENTURE</title>
 
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
+            width: 100%;
             height: 100vh;
             overflow: hidden;
             font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(#1689e8, #58c9ff);
-            color: white;
+            background: #168fe5;
         }
 
-        /* CIELO */
+        /* =========================
+           GAME SCREEN
+        ========================= */
 
         .game {
             position: relative;
             width: 100%;
             height: 100vh;
             overflow: hidden;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    #48c9ff 0%,
+                    #168fe5 55%,
+                    #79d86a 55%,
+                    #42ad3c 100%
+                );
         }
 
-        /* NUBES */
+        /* =========================
+           SUN
+        ========================= */
+
+        .sun {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+
+            top: 8%;
+            right: 8%;
+
+            background: #ffe86a;
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 40px rgba(255, 240, 120, 0.8);
+        }
+
+        /* =========================
+           CLOUDS
+        ========================= */
 
         .cloud {
             position: absolute;
+
             width: 180px;
-            height: 60px;
+            height: 55px;
+
             background: white;
             border-radius: 50px;
-            opacity: 0.8;
-            animation: moveClouds 35s linear infinite;
+
+            opacity: 0.85;
+
+            animation: cloudMove 35s linear infinite;
         }
 
         .cloud::before,
         .cloud::after {
             content: "";
+
             position: absolute;
+
             background: white;
             border-radius: 50%;
         }
 
         .cloud::before {
-            width: 80px;
-            height: 80px;
-            left: 25px;
-            bottom: 20px;
-        }
+            width: 75px;
+            height: 75px;
 
-        .cloud::after {
-            width: 100px;
-            height: 100px;
-            right: 20px;
+            left: 25px;
             bottom: 15px;
         }
 
+        .cloud::after {
+            width: 95px;
+            height: 95px;
+
+            right: 20px;
+            bottom: 10px;
+        }
+
         .cloud1 {
-            top: 12%;
-            left: -200px;
+            top: 16%;
+            left: -220px;
         }
 
         .cloud2 {
-            top: 30%;
-            left: -400px;
+            top: 35%;
+            left: -450px;
+
             transform: scale(0.7);
+
             animation-delay: 12s;
         }
 
-        @keyframes moveClouds {
+        @keyframes cloudMove {
+
             from {
                 transform: translateX(0);
             }
 
             to {
-                transform: translateX(130vw);
+                transform: translateX(140vw);
             }
+
         }
 
-        /* TÍTULO */
+        /* =========================
+           BACKGROUND HILLS
+        ========================= */
+
+        .hill {
+            position: absolute;
+
+            bottom: 20%;
+
+            width: 500px;
+            height: 250px;
+
+            background: #32a94a;
+
+            border-radius: 50% 50% 0 0;
+        }
+
+        .hill1 {
+            left: -100px;
+        }
+
+        .hill2 {
+            right: -120px;
+            transform: scale(1.2);
+        }
+
+        /* =========================
+           TITLE
+        ========================= */
 
         .title {
             position: absolute;
-            top: 12%;
+
+            top: 7%;
+
             width: 100%;
+
             text-align: center;
-            z-index: 5;
+
+            z-index: 10;
         }
 
         .title h1 {
-            margin: 0;
-            font-size: clamp(55px, 10vw, 130px);
-            font-weight: 900;
+
+            font-size: clamp(65px, 11vw, 145px);
+
+            font-weight: 1000;
             font-style: italic;
+
             letter-spacing: -8px;
 
             color: #ffffff;
 
             text-shadow:
-                5px 5px 0 #e6a700,
-                9px 9px 0 #0066b3,
-                13px 13px 0 #003c75;
+                4px 4px 0 #e8b900,
+                8px 8px 0 #0a6db3,
+                12px 12px 0 #034578;
+
+            transform: skew(-8deg);
+
+            animation: titleFloat 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleFloat {
+
+            from {
+                transform: skew(-8deg) translateY(0);
+            }
+
+            to {
+                transform: skew(-8deg) translateY(-5px);
+            }
+
         }
 
         .subtitle {
-            margin-top: -5px;
-            font-size: clamp(18px, 3vw, 30px);
-            font-weight: bold;
-            letter-spacing: 8px;
-            color: #fff;
-            text-shadow: 3px 3px #00528e;
+
+            margin-top: -10px;
+
+            font-size: clamp(20px, 3vw, 35px);
+
+            font-weight: 900;
+
+            letter-spacing: 10px;
+
+            color: #ffffff;
+
+            text-shadow:
+                3px 3px 0 #075b94;
+
+            transform: skew(-8deg);
         }
 
-        /* MENÚ */
+        /* =========================
+           SONIC PLACEHOLDER
+        ========================= */
+
+        .sonic {
+
+            position: absolute;
+
+            left: 8%;
+            bottom: 19%;
+
+            width: 190px;
+            height: 190px;
+
+            z-index: 8;
+
+            animation: sonicIdle 0.6s ease-in-out infinite alternate;
+        }
+
+        .sonic-body {
+
+            position: absolute;
+
+            width: 120px;
+            height: 120px;
+
+            left: 35px;
+            top: 40px;
+
+            background: #0879d1;
+
+            border-radius: 50%;
+
+            border: 5px solid #005a9c;
+
+            box-shadow:
+                inset -12px -8px 0 rgba(0,0,0,0.1);
+        }
+
+        .sonic-face {
+
+            position: absolute;
+
+            width: 95px;
+            height: 75px;
+
+            left: 50px;
+            top: 65px;
+
+            background: #ffd5a3;
+
+            border-radius: 50%;
+        }
+
+        .sonic-eye {
+
+            position: absolute;
+
+            width: 16px;
+            height: 30px;
+
+            background: white;
+
+            border-radius: 50%;
+
+            top: 60px;
+        }
+
+        .eye1 {
+            left: 75px;
+        }
+
+        .eye2 {
+            left: 96px;
+        }
+
+        .sonic-pupil {
+
+            position: absolute;
+
+            width: 7px;
+            height: 14px;
+
+            background: #111;
+
+            border-radius: 50%;
+
+            top: 68px;
+        }
+
+        .pupil1 {
+            left: 81px;
+        }
+
+        .pupil2 {
+            left: 102px;
+        }
+
+        .sonic-nose {
+
+            position: absolute;
+
+            width: 17px;
+            height: 12px;
+
+            background: #111;
+
+            border-radius: 50%;
+
+            left: 105px;
+            top: 88px;
+        }
+
+        .sonic-shoe {
+
+            position: absolute;
+
+            width: 65px;
+            height: 30px;
+
+            background: #e62828;
+
+            border-radius: 30px;
+
+            bottom: 15px;
+        }
+
+        .shoe1 {
+            left: 30px;
+            transform: rotate(-10deg);
+        }
+
+        .shoe2 {
+            right: 20px;
+            transform: rotate(10deg);
+        }
+
+        @keyframes sonicIdle {
+
+            from {
+                transform: translateY(0) rotate(-2deg);
+            }
+
+            to {
+                transform: translateY(-8px) rotate(2deg);
+            }
+
+        }
+
+        /* =========================
+           SPEED LINES
+        ========================= */
+
+        .speed-line {
+
+            position: absolute;
+
+            width: 100px;
+            height: 5px;
+
+            background: white;
+
+            opacity: 0.7;
+
+            animation: speedMove 1.5s linear infinite;
+        }
+
+        .line1 {
+            left: 3%;
+            bottom: 43%;
+        }
+
+        .line2 {
+            left: 18%;
+            bottom: 38%;
+            animation-delay: 0.5s;
+        }
+
+        .line3 {
+            left: 5%;
+            bottom: 52%;
+            animation-delay: 1s;
+        }
+
+        @keyframes speedMove {
+
+            from {
+                transform: translateX(-150px);
+                opacity: 0;
+            }
+
+            30% {
+                opacity: 0.8;
+            }
+
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+        }
+
+        /* =========================
+           MENU
+        ========================= */
 
         .menu {
+
             position: absolute;
-            z-index: 10;
 
-            top: 50%;
+            z-index: 20;
+
             left: 50%;
+            bottom: 11%;
 
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
+
+            width: min(360px, 80%);
 
             display: flex;
-            flex-direction: column;
-            gap: 15px;
 
-            width: min(350px, 80%);
+            flex-direction: column;
+
+            gap: 14px;
         }
 
         .menu button {
+
             border: 4px solid white;
+
             border-radius: 12px;
 
-            padding: 15px;
+            padding: 14px;
 
             background: #0879d1;
+
             color: white;
 
-            font-size: 22px;
+            font-size: 21px;
+
             font-weight: 900;
+
+            font-family: Arial, Helvetica, sans-serif;
 
             cursor: pointer;
 
             box-shadow:
                 0 6px 0 #004c8d,
-                0 0 15px rgba(0,0,0,0.25);
+                0 0 20px rgba(0,0,0,0.25);
 
             transition: 0.15s;
         }
 
         .menu button:hover {
+
             transform: scale(1.06);
-            background: #1498ff;
+
+            background: #149cff;
+
         }
 
         .menu button:active {
+
             transform: translateY(5px);
-            box-shadow: 0 1px 0 #004c8d;
+
+            box-shadow:
+                0 1px 0 #004c8d;
         }
 
-        /* SUELO */
-
-        .ground {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-
-            width: 100%;
-            height: 22%;
-
-            background:
-                repeating-linear-gradient(
-                    45deg,
-                    #4fbd42 0px,
-                    #4fbd42 25px,
-                    #3aa634 25px,
-                    #3aa634 50px
-                );
-
-            border-top: 12px solid #8b5a2b;
-        }
-
-        .grass {
-            position: absolute;
-            top: -18px;
-            left: 0;
-
-            width: 100%;
-            height: 20px;
-
-            background:
-                repeating-linear-gradient(
-                    90deg,
-                    #20a936 0px,
-                    #20a936 20px,
-                    #32c94b 20px,
-                    #32c94b 40px
-                );
-        }
-
-        /* ANILLOS */
+        /* =========================
+           RINGS
+        ========================= */
 
         .rings {
+
             position: absolute;
-            bottom: 17%;
-            left: 8%;
+
+            right: 12%;
+            bottom: 25%;
 
             display: flex;
-            gap: 20px;
+
+            gap: 18px;
+
+            z-index: 7;
         }
 
         .ring {
-            width: 38px;
-            height: 38px;
+
+            width: 40px;
+            height: 40px;
 
             border: 7px solid #ffd92f;
+
             border-radius: 50%;
 
             box-shadow:
-                inset 0 0 0 2px #f5a900,
-                0 0 8px rgba(255, 220, 40, 0.7);
+                0 0 8px rgba(255,220,40,0.8);
 
-            animation: ringFloat 1.5s ease-in-out infinite alternate;
+            animation:
+                ringFloat 1.3s ease-in-out infinite alternate;
         }
 
         .ring:nth-child(2) {
@@ -242,97 +535,258 @@
         }
 
         @keyframes ringFloat {
+
             from {
                 transform: translateY(0);
             }
 
             to {
-                transform: translateY(-12px);
+                transform: translateY(-15px);
             }
+
         }
 
-        /* COPYRIGHT */
+        /* =========================
+           GROUND
+        ========================= */
+
+        .ground {
+
+            position: absolute;
+
+            bottom: 0;
+            left: 0;
+
+            width: 100%;
+            height: 20%;
+
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    #49b83e 0px,
+                    #49b83e 25px,
+                    #35a632 25px,
+                    #35a632 50px
+                );
+
+            border-top: 12px solid #8a5829;
+
+            z-index: 5;
+        }
+
+        .grass {
+
+            position: absolute;
+
+            top: -18px;
+
+            width: 100%;
+            height: 20px;
+
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    #21a837 0px,
+                    #21a837 20px,
+                    #35ce4a 20px,
+                    #35ce4a 40px
+                );
+        }
+
+        /* =========================
+           COPYRIGHT
+        ========================= */
 
         .copyright {
+
             position: absolute;
-            bottom: 12px;
+
+            bottom: 7px;
+
             width: 100%;
+
             text-align: center;
 
-            font-size: 12px;
+            font-family: monospace;
+
+            font-size: 11px;
+
+            color: white;
+
             opacity: 0.7;
 
-            z-index: 20;
+            z-index: 30;
         }
 
-        /* PANTALLA NEGRA */
+        /* =========================
+           TRANSITION
+        ========================= */
 
-        .screen {
+        .transition {
+
             position: fixed;
+
             inset: 0;
 
-            background: #050505;
+            background: #0879d1;
+
+            z-index: 100;
 
             display: none;
 
-            justify-content: center;
             align-items: center;
+            justify-content: center;
 
-            z-index: 100;
-        }
+            flex-direction: column;
 
-        .screen.active {
-            display: flex;
-        }
+            color: white;
 
-        .loading {
-            text-align: center;
             font-family: monospace;
         }
 
-        .loading h2 {
-            font-size: 35px;
+        .transition.active {
+
+            display: flex;
+
+            animation: fadeIn 0.3s ease;
         }
 
-        .loading p {
-            color: #777;
+        .transition h2 {
+
+            font-size: clamp(30px, 6vw, 70px);
+
+            font-style: italic;
+
+            text-shadow:
+                4px 4px #00528e;
+        }
+
+        .transition p {
+
+            margin-top: 15px;
+
+            font-size: 18px;
+
+        }
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .title {
+                top: 8%;
+            }
+
+            .sonic {
+                left: 2%;
+                bottom: 21%;
+                transform: scale(0.7);
+                transform-origin: bottom left;
+            }
+
+            .rings {
+                right: 5%;
+                bottom: 35%;
+                transform: scale(0.7);
+            }
+
+            .menu {
+                bottom: 7%;
+            }
+
+            .menu button {
+                padding: 11px;
+                font-size: 17px;
+            }
+
+            .ground {
+                height: 18%;
+            }
+
         }
 
     </style>
 </head>
 
+
 <body>
 
 <div class="game">
 
+    <!-- SUN -->
+
+    <div class="sun"></div>
+
+
+    <!-- CLOUDS -->
+
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
+
+
+    <!-- BACKGROUND HILLS -->
+
+    <div class="hill hill1"></div>
+    <div class="hill hill2"></div>
+
+
+    <!-- TITLE -->
 
     <div class="title">
 
         <h1>SONIC</h1>
 
         <div class="subtitle">
-            THE HEDGEHOG
+            SECRET ADVENTURE
         </div>
 
     </div>
 
-    <div class="menu">
 
-        <button onclick="startGame()">
-            ▶ START GAME
-        </button>
+    <!-- SONIC -->
 
-        <button onclick="showMessage()">
-            ⚙ OPTIONS
-        </button>
+    <div class="sonic">
 
-        <button onclick="showCredits()">
-            ★ CREDITS
-        </button>
+        <div class="sonic-body"></div>
+
+        <div class="sonic-face"></div>
+
+        <div class="sonic-eye eye1"></div>
+        <div class="sonic-eye eye2"></div>
+
+        <div class="sonic-pupil pupil1"></div>
+        <div class="sonic-pupil pupil2"></div>
+
+        <div class="sonic-nose"></div>
+
+        <div class="sonic-shoe shoe1"></div>
+        <div class="sonic-shoe shoe2"></div>
 
     </div>
+
+
+    <!-- SPEED EFFECTS -->
+
+    <div class="speed-line line1"></div>
+    <div class="speed-line line2"></div>
+    <div class="speed-line line3"></div>
+
+
+    <!-- RINGS -->
 
     <div class="rings">
 
@@ -342,72 +796,120 @@
 
     </div>
 
+
+    <!-- MENU -->
+
+    <div class="menu">
+
+        <button onclick="startGame()">
+            ▶ PRESS START
+        </button>
+
+        <button onclick="showOptions()">
+            ⚙ OPTIONS
+        </button>
+
+        <button onclick="showExtras()">
+            ★ EXTRAS
+        </button>
+
+    </div>
+
+
+    <!-- GROUND -->
+
     <div class="ground">
 
         <div class="grass"></div>
 
     </div>
 
+
+    <!-- COPYRIGHT -->
+
     <div class="copyright">
-        EXPERIMENTAL BUILD • 2026
+
+        SECRET ADVENTURE • EXPERIMENTAL BUILD • 2026
+
     </div>
 
 </div>
 
-<div id="screen" class="screen">
 
-    <div class="loading">
+<!-- TRANSITION SCREEN -->
 
-        <h2 id="screenTitle">
-            LOADING...
-        </h2>
+<div id="transition" class="transition">
 
-        <p id="screenText">
-            Please wait...
-        </p>
+    <h2 id="transitionTitle">
+        GREEN HILL ZONE
+    </h2>
 
-    </div>
+    <p id="transitionText">
+        Loading adventure...
+    </p>
 
 </div>
 
 
 <script>
 
-function startGame() {
+    function startGame() {
 
-    document.getElementById("screen").classList.add("active");
+        const transition =
+            document.getElementById("transition");
 
-    document.getElementById("screenTitle").innerText =
-        "GREEN HILL ZONE";
+        const title =
+            document.getElementById("transitionTitle");
 
-    document.getElementById("screenText").innerText =
-        "Preparing level...";
-
-    setTimeout(() => {
-
-        document.getElementById("screenTitle").innerText =
-            "COMING SOON";
-
-        document.getElementById("screenText").innerText =
-            "The adventure is being prepared...";
-
-    }, 1800);
-
-}
+        const text =
+            document.getElementById("transitionText");
 
 
-function showMessage() {
+        transition.classList.add("active");
 
-    alert("SYSTEM OPTIONS\n\nNothing suspicious here. 👀");
+        title.innerText =
+            "GREEN HILL ZONE";
 
-}
+        text.innerText =
+            "Loading adventure...";
 
 
-function showCredits() {
+        setTimeout(() => {
 
-    alert("SONIC SECRET PROJECT\n\nExperimental build • 2026");
+            title.innerText =
+                "COMING SOON";
 
-}
+            text.innerText =
+                "The adventure is being prepared...";
+
+        }, 2000);
+
+    }
+
+
+    function showOptions() {
+
+        alert(
+            "OPTIONS\n\n" +
+            "🔊 Sound: ON\n" +
+            "⚡ Speed: MAXIMUM\n" +
+            "💙 Adventure: SECRET"
+        );
+
+    }
+
+
+    function showExtras() {
+
+        alert(
+            "EXTRAS\n\n" +
+            "???\n" +
+            "???\n" +
+            "???\n\n" +
+            "Some secrets are better discovered."
+        );
+
+    }
 
 </script>
 
