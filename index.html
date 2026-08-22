@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Feliz Cumpleaños Supersónico!</title>
+    <title>¡Feliz No Cumpleaños!</title>
     <style>
         /* Estilos generales y fondo de cielo */
         body {
@@ -126,7 +126,7 @@
 <body>
 
     <div class="container">
-        <h1 id="mainTitle">¡LEVEL UP!</h1>
+        <h1 id="mainTitle">No me juzgues, esto es dificil D: </h1>
         <p id="subtitle" style="font-size: 1.5rem;">Demuestra que eres un verdadero fan para desbloquear tu regalo.</p>
         
         <!-- Pantalla de Inicio -->
@@ -168,6 +168,11 @@
                 question: "¿Cuál es el verdadero nombre del villano de Sonic?",
                 options: ["Dr. Robotnik", "Dr. Wily", "Bowser", "King K. Rool"],
                 correctAnswer: 0 // Dr. Robotnik / Eggman
+            },
+            {
+                question: "¿Cuál es el verdadero enemigo nocturno de Lu?",
+                options: ["El sistema capitalista", "Las entidades del departamento", "Los mosquitos hembra que quieren su sangre", "Batman"],
+                correctAnswer: 2 // Los mosquitos hembra que quieren su sangre
             }
         ];
 
@@ -219,7 +224,7 @@
                 }
             } else {
                 // Respuesta incorrecta
-                alert("¡Ups! Esa no es. ¡Intenta de nuevo!");
+                alert("Lu? tu equivocandote con Sonic? :O");
             }
         }
 
@@ -227,7 +232,7 @@
         function showFinalMessage() {
             triviaSection.style.display = 'none';
             finalMessage.style.display = 'block';
-            mainTitle.innerText = "¡ACTO COMPLETADO!";
+            mainTitle.innerText = "¡Si sabias todaaaaas n.n!";
         }
     </script>
 </body>
