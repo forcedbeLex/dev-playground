@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Feliz Cumpleaños falso Lu!</title>
+    <title>¡Feliz Cumpleaños Supersónico!</title>
     <style>
         /* Estilos generales y fondo de cielo */
         body {
             margin: 0;
             padding: 0;
             background-color: #87CEEB; /* Azul cielo */
-            font-family: 'Courier New', Courier, monospace; /* Fuente estilo retro/pixel */
-            overflow: hidden; /* Evita barras de desplazamiento */
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
             text-align: center;
             color: white;
-            text-shadow: 3px 3px 0 #000; /* Sombra para que parezca de 16-bits */
+            text-shadow: 2px 2px 0 #000;
         }
 
         /* El suelo de Green Hill Zone */
@@ -23,7 +23,6 @@
             bottom: 0;
             width: 100%;
             height: 150px;
-            /* Patrón de cuadros marrones */
             background:
                 linear-gradient(135deg, #8B4513 25%, transparent 25%) -50px 0,
                 linear-gradient(225deg, #8B4513 25%, transparent 25%) -50px 0,
@@ -31,10 +30,11 @@
                 linear-gradient(45deg, #8B4513 25%, transparent 25%);
             background-size: 100px 100px;
             background-color: #D2691E;
-            border-top: 25px solid #32CD32; /* El pasto verde */
+            border-top: 25px solid #32CD32;
+            z-index: 1;
         }
 
-        /* Contenedor del texto */
+        /* Contenedor principal */
         .container {
             position: relative;
             z-index: 10;
@@ -44,17 +44,17 @@
 
         h1 {
             font-size: 3.5rem;
-            color: #FFD700; /* Dorado como los anillos */
+            color: #FFD700;
             text-transform: uppercase;
             margin-bottom: 5px;
         }
 
-        /* El botón de Start */
+        /* Botones generales */
         .btn {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 15px 40px;
             font-size: 1.8rem;
-            background-color: #FF0000; /* Rojo como los zapatos de Sonic */
+            background-color: #FF0000;
             color: white;
             border: 4px solid white;
             border-radius: 10px;
@@ -71,15 +71,50 @@
             box-shadow: 0 0 0 #8B0000;
         }
 
-        /* Mensaje oculto que aparece al dar click */
-        #hiddenMessage {
+        /* Estilos de la Trivia */
+        #triviaSection {
             display: none;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 100, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 20px auto;
+            border: 4px solid #FFD700;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background-color: #0000CD;
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            padding: 15px 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .option-btn:hover {
+            background-color: #4169E1;
+        }
+
+        /* Mensaje final */
+        #finalMessage {
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 15px;
             max-width: 600px;
             margin: 20px auto;
-            border: 3px solid #FFD700;
+            border: 4px solid #32CD32;
         }
 
         .sonic-gif {
@@ -91,16 +126,24 @@
 <body>
 
     <div class="container">
-        <h1 id="title">¡LEVEL UP!</h1>
-        <p id="subtitle" style="font-size: 1.5rem;">¿Listo para el siguiente nivel?</p>
+        <h1 id="mainTitle">¡LEVEL UP!</h1>
+        <p id="subtitle" style="font-size: 1.5rem;">Demuestra que eres un verdadero fan para desbloquear tu regalo.</p>
         
+        <!-- Pantalla de Inicio -->
         <button class="btn" id="startBtn">START</button>
         
-        <!-- Este mensaje está oculto hasta que presiona START -->
-        <div id="hiddenMessage">
-            <h2>Simplemente es una prueba ;P </h2>
-            <p>Tienes la dicha de disfurtar dos cumpleaños :D </p>
-            <!-- GIF de Sonic corriendo -->
+        <!-- Sección de Trivia -->
+        <div id="triviaSection">
+            <h2 id="questionText">Pregunta aquí</h2>
+            <div class="options-grid" id="optionsContainer">
+                <!-- Los botones se generarán con JavaScript -->
+            </div>
+        </div>
+
+        <!-- Mensaje Final Oculto -->
+        <div id="finalMessage">
+            <h2>¡Feliz Cumpleaños falso Lu n.n!</h2>
+            <p>¡Superaste el nivel! Gotta go fast, ahora si, el regalo vendra en tu verdadero cumple, esto solo era un pre :D.</p>
             <img src="https://media.giphy.com/media/hDFyKOU28434K/giphy.gif" alt="Sonic Running" class="sonic-gif">
         </div>
     </div>
@@ -109,18 +152,83 @@
     <div class="ground"></div>
 
     <script>
-        // Lógica para el botón START
-        document.getElementById('startBtn').addEventListener('click', function() {
-            // Ocultar el botón y el subtítulo
-            this.style.display = 'none';
-            document.getElementById('subtitle').style.display = 'none';
-            
-            // Mostrar el mensaje secreto
-            document.getElementById('hiddenMessage').style.display = 'block';
-            
-            // Cambiar el título principal
-            document.getElementById('title').innerText = "¡ACTO COMPLETADO!";
+        // --- PREGUNTAS DE LA TRIVIA ---
+        const questions = [
+            {
+                question: "¿Cómo se llama el mejor amigo de Sonic?",
+                options: ["Knuckles", "Tails", "Shadow", "Amy"],
+                correctAnswer: 1 // Tails (la posición 1 en el arreglo, ya que empieza a contar desde 0)
+            },
+            {
+                question: "¿Cuántas Chaos Emeralds (Esmeraldas del Caos) existen?",
+                options: ["5", "6", "7", "8"],
+                correctAnswer: 2 // 7
+            },
+            {
+                question: "¿Cuál es el verdadero nombre del villano de Sonic?",
+                options: ["Dr. Robotnik", "Dr. Wily", "Bowser", "King K. Rool"],
+                correctAnswer: 0 // Dr. Robotnik / Eggman
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        // Elementos del DOM
+        const startBtn = document.getElementById('startBtn');
+        const subtitle = document.getElementById('subtitle');
+        const triviaSection = document.getElementById('triviaSection');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const finalMessage = document.getElementById('finalMessage');
+        const mainTitle = document.getElementById('mainTitle');
+
+        // Iniciar el juego
+        startBtn.addEventListener('click', () => {
+            startBtn.style.display = 'none';
+            subtitle.style.display = 'none';
+            triviaSection.style.display = 'block';
+            loadQuestion();
         });
+
+        // Cargar la pregunta actual
+        function loadQuestion() {
+            const currentQ = questions[currentQuestionIndex];
+            questionText.innerText = currentQ.question;
+            optionsContainer.innerHTML = ''; // Limpiar botones anteriores
+
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                btn.innerText = option;
+                btn.addEventListener('click', () => checkAnswer(index));
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // Verificar la respuesta
+        function checkAnswer(selectedIndex) {
+            const currentQ = questions[currentQuestionIndex];
+            
+            if (selectedIndex === currentQ.correctAnswer) {
+                // Respuesta correcta
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion(); // Siguiente pregunta
+                } else {
+                    showFinalMessage(); // Ganó el juego
+                }
+            } else {
+                // Respuesta incorrecta
+                alert("¡Ups! Esa no es. ¡Intenta de nuevo!");
+            }
+        }
+
+        // Mostrar el regalo final
+        function showFinalMessage() {
+            triviaSection.style.display = 'none';
+            finalMessage.style.display = 'block';
+            mainTitle.innerText = "¡ACTO COMPLETADO!";
+        }
     </script>
 </body>
 </html>
