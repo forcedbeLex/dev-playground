@@ -1,915 +1,1180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>SONIC: SECRET ADVENTURE</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #168fe5;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SONIC: SECRET ADVENTURE</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+    font-family: monospace;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+#startScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        linear-gradient(#168bd4 0%, #4fc8ef 60%, #73c94b 60%, #43a83d 100%);
+
+    overflow: hidden;
+}
+
+.sun {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: #ffe34d;
+    top: 12%;
+    right: 12%;
+    box-shadow: 0 0 0 8px rgba(255,255,255,.15);
+}
+
+.cloud {
+    position: absolute;
+    width: 130px;
+    height: 30px;
+    background: white;
+    border-radius: 30px;
+    opacity: .8;
+}
+
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+}
+
+.cloud::before {
+    width: 55px;
+    height: 55px;
+    left: 15px;
+    bottom: 5px;
+}
+
+.cloud::after {
+    width: 70px;
+    height: 70px;
+    right: 15px;
+    bottom: 0;
+}
+
+.cloud1 {
+    top: 18%;
+    left: 10%;
+}
+
+.cloud2 {
+    top: 35%;
+    right: 18%;
+    transform: scale(.7);
+}
+
+.logo {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    transform: skew(-7deg);
+}
+
+.logo h1 {
+    margin: 0;
 
-        /* =========================
-           GAME SCREEN
-        ========================= */
+    font-family: Arial, sans-serif;
+    font-size: clamp(75px, 14vw, 170px);
+    font-weight: 1000;
+    font-style: italic;
+    letter-spacing: -12px;
 
-        .game {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
+    color: #fff;
 
-            background:
-                linear-gradient(
-                    to bottom,
-                    #48c9ff 0%,
-                    #168fe5 55%,
-                    #79d86a 55%,
-                    #42ad3c 100%
-                );
-        }
+    text-shadow:
+        5px 5px 0 #e8b91b,
+        10px 10px 0 #0865a5,
+        15px 15px 0 #003b69;
+}
 
-        /* =========================
-           SUN
-        ========================= */
+.logo h2 {
+    margin-top: -15px;
 
-        .sun {
-            position: absolute;
-            width: 150px;
-            height: 150px;
+    font-family: Arial, sans-serif;
+    font-size: clamp(20px, 4vw, 45px);
+    letter-spacing: 8px;
+    color: white;
 
-            top: 8%;
-            right: 8%;
+    text-shadow:
+        3px 3px #075b91;
+}
 
-            background: #ffe86a;
-            border-radius: 50%;
+.startButton {
+    position: relative;
+    z-index: 3;
 
-            box-shadow:
-                0 0 40px rgba(255, 240, 120, 0.8);
-        }
+    margin-top: 50px;
 
-        /* =========================
-           CLOUDS
-        ========================= */
+    padding: 15px 45px;
 
-        .cloud {
-            position: absolute;
+    border: 4px solid white;
+    border-radius: 6px;
 
-            width: 180px;
-            height: 55px;
+    background: #075fa5;
+    color: white;
 
-            background: white;
-            border-radius: 50px;
+    font-family: monospace;
+    font-size: 24px;
+    font-weight: bold;
 
-            opacity: 0.85;
+    cursor: pointer;
 
-            animation: cloudMove 35s linear infinite;
-        }
+    box-shadow:
+        0 6px 0 #003c69,
+        0 0 20px rgba(0,0,0,.3);
 
-        .cloud::before,
-        .cloud::after {
-            content: "";
+    transition: .12s;
+}
 
-            position: absolute;
+.startButton:hover {
+    background: #0b8be0;
+    transform: scale(1.08);
+}
 
-            background: white;
-            border-radius: 50%;
-        }
+.startButton:active {
+    transform: translateY(5px);
+    box-shadow: 0 1px 0 #003c69;
+}
 
-        .cloud::before {
-            width: 75px;
-            height: 75px;
+.hint {
+    position: absolute;
+    bottom: 25px;
+    color: white;
+    opacity: .8;
+    font-size: 12px;
+    z-index: 3;
+}
 
-            left: 25px;
-            bottom: 15px;
-        }
+#game {
+    display: none;
+}
 
-        .cloud::after {
-            width: 95px;
-            height: 95px;
+#levelText {
+    position: fixed;
+    z-index: 5;
 
-            right: 20px;
-            bottom: 10px;
-        }
+    top: 50%;
+    left: 50%;
 
-        .cloud1 {
-            top: 16%;
-            left: -220px;
-        }
+    transform: translate(-50%, -50%);
 
-        .cloud2 {
-            top: 35%;
-            left: -450px;
+    color: white;
 
-            transform: scale(0.7);
+    font-family: Arial, sans-serif;
+    font-size: clamp(30px, 7vw, 80px);
+    font-weight: 900;
+    font-style: italic;
 
-            animation-delay: 12s;
-        }
+    text-shadow:
+        4px 4px #075b91;
 
-        @keyframes cloudMove {
+    pointer-events: none;
 
-            from {
-                transform: translateX(0);
-            }
+    opacity: 0;
+}
 
-            to {
-                transform: translateX(140vw);
-            }
+@keyframes zoneIntro {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
 
-        }
+    25% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 
-        /* =========================
-           BACKGROUND HILLS
-        ========================= */
+    70% {
+        opacity: 1;
+    }
 
-        .hill {
-            position: absolute;
+    100% {
+        opacity: 0;
+    }
+}
 
-            bottom: 20%;
-
-            width: 500px;
-            height: 250px;
-
-            background: #32a94a;
-
-            border-radius: 50% 50% 0 0;
-        }
-
-        .hill1 {
-            left: -100px;
-        }
-
-        .hill2 {
-            right: -120px;
-            transform: scale(1.2);
-        }
-
-        /* =========================
-           TITLE
-        ========================= */
-
-        .title {
-            position: absolute;
-
-            top: 7%;
-
-            width: 100%;
-
-            text-align: center;
-
-            z-index: 10;
-        }
-
-        .title h1 {
-
-            font-size: clamp(65px, 11vw, 145px);
-
-            font-weight: 1000;
-            font-style: italic;
-
-            letter-spacing: -8px;
-
-            color: #ffffff;
-
-            text-shadow:
-                4px 4px 0 #e8b900,
-                8px 8px 0 #0a6db3,
-                12px 12px 0 #034578;
-
-            transform: skew(-8deg);
-
-            animation: titleFloat 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes titleFloat {
-
-            from {
-                transform: skew(-8deg) translateY(0);
-            }
-
-            to {
-                transform: skew(-8deg) translateY(-5px);
-            }
-
-        }
-
-        .subtitle {
-
-            margin-top: -10px;
-
-            font-size: clamp(20px, 3vw, 35px);
-
-            font-weight: 900;
-
-            letter-spacing: 10px;
-
-            color: #ffffff;
-
-            text-shadow:
-                3px 3px 0 #075b94;
-
-            transform: skew(-8deg);
-        }
-
-        /* =========================
-           SONIC PLACEHOLDER
-        ========================= */
-
-        .sonic {
-
-            position: absolute;
-
-            left: 8%;
-            bottom: 19%;
-
-            width: 190px;
-            height: 190px;
-
-            z-index: 8;
-
-            animation: sonicIdle 0.6s ease-in-out infinite alternate;
-        }
-
-        .sonic-body {
-
-            position: absolute;
-
-            width: 120px;
-            height: 120px;
-
-            left: 35px;
-            top: 40px;
-
-            background: #0879d1;
-
-            border-radius: 50%;
-
-            border: 5px solid #005a9c;
-
-            box-shadow:
-                inset -12px -8px 0 rgba(0,0,0,0.1);
-        }
-
-        .sonic-face {
-
-            position: absolute;
-
-            width: 95px;
-            height: 75px;
-
-            left: 50px;
-            top: 65px;
-
-            background: #ffd5a3;
-
-            border-radius: 50%;
-        }
-
-        .sonic-eye {
-
-            position: absolute;
-
-            width: 16px;
-            height: 30px;
-
-            background: white;
-
-            border-radius: 50%;
-
-            top: 60px;
-        }
-
-        .eye1 {
-            left: 75px;
-        }
-
-        .eye2 {
-            left: 96px;
-        }
-
-        .sonic-pupil {
-
-            position: absolute;
-
-            width: 7px;
-            height: 14px;
-
-            background: #111;
-
-            border-radius: 50%;
-
-            top: 68px;
-        }
-
-        .pupil1 {
-            left: 81px;
-        }
-
-        .pupil2 {
-            left: 102px;
-        }
-
-        .sonic-nose {
-
-            position: absolute;
-
-            width: 17px;
-            height: 12px;
-
-            background: #111;
-
-            border-radius: 50%;
-
-            left: 105px;
-            top: 88px;
-        }
-
-        .sonic-shoe {
-
-            position: absolute;
-
-            width: 65px;
-            height: 30px;
-
-            background: #e62828;
-
-            border-radius: 30px;
-
-            bottom: 15px;
-        }
-
-        .shoe1 {
-            left: 30px;
-            transform: rotate(-10deg);
-        }
-
-        .shoe2 {
-            right: 20px;
-            transform: rotate(10deg);
-        }
-
-        @keyframes sonicIdle {
-
-            from {
-                transform: translateY(0) rotate(-2deg);
-            }
-
-            to {
-                transform: translateY(-8px) rotate(2deg);
-            }
-
-        }
-
-        /* =========================
-           SPEED LINES
-        ========================= */
-
-        .speed-line {
-
-            position: absolute;
-
-            width: 100px;
-            height: 5px;
-
-            background: white;
-
-            opacity: 0.7;
-
-            animation: speedMove 1.5s linear infinite;
-        }
-
-        .line1 {
-            left: 3%;
-            bottom: 43%;
-        }
-
-        .line2 {
-            left: 18%;
-            bottom: 38%;
-            animation-delay: 0.5s;
-        }
-
-        .line3 {
-            left: 5%;
-            bottom: 52%;
-            animation-delay: 1s;
-        }
-
-        @keyframes speedMove {
-
-            from {
-                transform: translateX(-150px);
-                opacity: 0;
-            }
-
-            30% {
-                opacity: 0.8;
-            }
-
-            to {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-
-        }
-
-        /* =========================
-           MENU
-        ========================= */
-
-        .menu {
-
-            position: absolute;
-
-            z-index: 20;
-
-            left: 50%;
-            bottom: 11%;
-
-            transform: translateX(-50%);
-
-            width: min(360px, 80%);
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 14px;
-        }
-
-        .menu button {
-
-            border: 4px solid white;
-
-            border-radius: 12px;
-
-            padding: 14px;
-
-            background: #0879d1;
-
-            color: white;
-
-            font-size: 21px;
-
-            font-weight: 900;
-
-            font-family: Arial, Helvetica, sans-serif;
-
-            cursor: pointer;
-
-            box-shadow:
-                0 6px 0 #004c8d,
-                0 0 20px rgba(0,0,0,0.25);
-
-            transition: 0.15s;
-        }
-
-        .menu button:hover {
-
-            transform: scale(1.06);
-
-            background: #149cff;
-
-        }
-
-        .menu button:active {
-
-            transform: translateY(5px);
-
-            box-shadow:
-                0 1px 0 #004c8d;
-        }
-
-        /* =========================
-           RINGS
-        ========================= */
-
-        .rings {
-
-            position: absolute;
-
-            right: 12%;
-            bottom: 25%;
-
-            display: flex;
-
-            gap: 18px;
-
-            z-index: 7;
-        }
-
-        .ring {
-
-            width: 40px;
-            height: 40px;
-
-            border: 7px solid #ffd92f;
-
-            border-radius: 50%;
-
-            box-shadow:
-                0 0 8px rgba(255,220,40,0.8);
-
-            animation:
-                ringFloat 1.3s ease-in-out infinite alternate;
-        }
-
-        .ring:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .ring:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes ringFloat {
-
-            from {
-                transform: translateY(0);
-            }
-
-            to {
-                transform: translateY(-15px);
-            }
-
-        }
-
-        /* =========================
-           GROUND
-        ========================= */
-
-        .ground {
-
-            position: absolute;
-
-            bottom: 0;
-            left: 0;
-
-            width: 100%;
-            height: 20%;
-
-            background:
-                repeating-linear-gradient(
-                    45deg,
-                    #49b83e 0px,
-                    #49b83e 25px,
-                    #35a632 25px,
-                    #35a632 50px
-                );
-
-            border-top: 12px solid #8a5829;
-
-            z-index: 5;
-        }
-
-        .grass {
-
-            position: absolute;
-
-            top: -18px;
-
-            width: 100%;
-            height: 20px;
-
-            background:
-                repeating-linear-gradient(
-                    90deg,
-                    #21a837 0px,
-                    #21a837 20px,
-                    #35ce4a 20px,
-                    #35ce4a 40px
-                );
-        }
-
-        /* =========================
-           COPYRIGHT
-        ========================= */
-
-        .copyright {
-
-            position: absolute;
-
-            bottom: 7px;
-
-            width: 100%;
-
-            text-align: center;
-
-            font-family: monospace;
-
-            font-size: 11px;
-
-            color: white;
-
-            opacity: 0.7;
-
-            z-index: 30;
-        }
-
-        /* =========================
-           TRANSITION
-        ========================= */
-
-        .transition {
-
-            position: fixed;
-
-            inset: 0;
-
-            background: #0879d1;
-
-            z-index: 100;
-
-            display: none;
-
-            align-items: center;
-            justify-content: center;
-
-            flex-direction: column;
-
-            color: white;
-
-            font-family: monospace;
-        }
-
-        .transition.active {
-
-            display: flex;
-
-            animation: fadeIn 0.3s ease;
-        }
-
-        .transition h2 {
-
-            font-size: clamp(30px, 6vw, 70px);
-
-            font-style: italic;
-
-            text-shadow:
-                4px 4px #00528e;
-        }
-
-        .transition p {
-
-            margin-top: 15px;
-
-            font-size: 18px;
-
-        }
-
-        @keyframes fadeIn {
-
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 700px) {
-
-            .title {
-                top: 8%;
-            }
-
-            .sonic {
-                left: 2%;
-                bottom: 21%;
-                transform: scale(0.7);
-                transform-origin: bottom left;
-            }
-
-            .rings {
-                right: 5%;
-                bottom: 35%;
-                transform: scale(0.7);
-            }
-
-            .menu {
-                bottom: 7%;
-            }
-
-            .menu button {
-                padding: 11px;
-                font-size: 17px;
-            }
-
-            .ground {
-                height: 18%;
-            }
-
-        }
-
-    </style>
+.zoneIntro {
+    animation: zoneIntro 2.5s forwards;
+}
+</style>
 </head>
-
 
 <body>
 
-<div class="game">
+<!-- =========================
+     START SCREEN
+========================= -->
 
-    <!-- SUN -->
+<div id="startScreen">
 
     <div class="sun"></div>
-
-
-    <!-- CLOUDS -->
 
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
 
-
-    <!-- BACKGROUND HILLS -->
-
-    <div class="hill hill1"></div>
-    <div class="hill hill2"></div>
-
-
-    <!-- TITLE -->
-
-    <div class="title">
+    <div class="logo">
 
         <h1>SONIC</h1>
 
-        <div class="subtitle">
-            SECRET ADVENTURE
-        </div>
+        <h2>SECRET ADVENTURE</h2>
 
     </div>
 
+    <button class="startButton" onclick="startGame()">
+        ▶ PRESS START
+    </button>
 
-    <!-- SONIC -->
-
-    <div class="sonic">
-
-        <div class="sonic-body"></div>
-
-        <div class="sonic-face"></div>
-
-        <div class="sonic-eye eye1"></div>
-        <div class="sonic-eye eye2"></div>
-
-        <div class="sonic-pupil pupil1"></div>
-        <div class="sonic-pupil pupil2"></div>
-
-        <div class="sonic-nose"></div>
-
-        <div class="sonic-shoe shoe1"></div>
-        <div class="sonic-shoe shoe2"></div>
-
-    </div>
-
-
-    <!-- SPEED EFFECTS -->
-
-    <div class="speed-line line1"></div>
-    <div class="speed-line line2"></div>
-    <div class="speed-line line3"></div>
-
-
-    <!-- RINGS -->
-
-    <div class="rings">
-
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <div class="ring"></div>
-
-    </div>
-
-
-    <!-- MENU -->
-
-    <div class="menu">
-
-        <button onclick="startGame()">
-            ▶ PRESS START
-        </button>
-
-        <button onclick="showOptions()">
-            ⚙ OPTIONS
-        </button>
-
-        <button onclick="showExtras()">
-            ★ EXTRAS
-        </button>
-
-    </div>
-
-
-    <!-- GROUND -->
-
-    <div class="ground">
-
-        <div class="grass"></div>
-
-    </div>
-
-
-    <!-- COPYRIGHT -->
-
-    <div class="copyright">
-
-        SECRET ADVENTURE • EXPERIMENTAL BUILD • 2026
-
+    <div class="hint">
+        A SECRET ADVENTURE IS WAITING...
     </div>
 
 </div>
 
 
-<!-- TRANSITION SCREEN -->
+<!-- =========================
+     GAME
+========================= -->
 
-<div id="transition" class="transition">
+<canvas id="game"></canvas>
 
-    <h2 id="transitionTitle">
-        GREEN HILL ZONE
-    </h2>
-
-    <p id="transitionText">
-        Loading adventure...
-    </p>
-
+<div id="levelText">
+    GREEN HILL ZONE
 </div>
 
 
 <script>
 
-    function startGame() {
+/* ==================================================
+   CANVAS
+================================================== */
 
-        const transition =
-            document.getElementById("transition");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-        const title =
-            document.getElementById("transitionTitle");
+ctx.imageSmoothingEnabled = false;
 
-        const text =
-            document.getElementById("transitionText");
+let W;
+let H;
+
+function resize() {
+
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+
+}
+
+window.addEventListener("resize", resize);
+
+resize();
 
 
-        transition.classList.add("active");
+/* ==================================================
+   GAME STATE
+================================================== */
 
-        title.innerText =
-            "GREEN HILL ZONE";
+let gameRunning = false;
 
-        text.innerText =
-            "Loading adventure...";
+let cameraX = 0;
 
+let score = 0;
+
+let rings = 0;
+
+let keys = {};
+
+
+/* ==================================================
+   PLAYER
+================================================== */
+
+const player = {
+
+    x: 120,
+    y: 300,
+
+    width: 38,
+    height: 48,
+
+    vx: 0,
+    vy: 0,
+
+    speed: 5,
+
+    jump: 12,
+
+    grounded: false
+
+};
+
+
+/* ==================================================
+   LEVEL
+================================================== */
+
+const levelWidth = 5200;
+
+const groundY = 430;
+
+
+/* ==================================================
+   RINGS
+================================================== */
+
+const ringObjects = [
+
+    {x: 450, y: 350, collected:false},
+    {x: 500, y: 350, collected:false},
+    {x: 550, y: 350, collected:false},
+
+    {x: 850, y: 300, collected:false},
+    {x: 900, y: 300, collected:false},
+    {x: 950, y: 300, collected:false},
+
+    {x: 1350, y: 350, collected:false},
+    {x: 1400, y: 350, collected:false},
+    {x: 1450, y: 350, collected:false},
+
+    {x: 1900, y: 280, collected:false},
+    {x: 1950, y: 280, collected:false},
+    {x: 2000, y: 280, collected:false},
+
+    {x: 2500, y: 340, collected:false},
+    {x: 2550, y: 340, collected:false},
+    {x: 2600, y: 340, collected:false},
+
+    {x: 3200, y: 300, collected:false},
+    {x: 3250, y: 300, collected:false},
+    {x: 3300, y: 300, collected:false},
+
+    {x: 4000, y: 350, collected:false},
+    {x: 4050, y: 350, collected:false},
+    {x: 4100, y: 350, collected:false}
+
+];
+
+
+/* ==================================================
+   PLATFORMS
+================================================== */
+
+const platforms = [
+
+    {x: 700, y: 350, w: 180, h: 25},
+
+    {x: 1100, y: 320, w: 200, h: 25},
+
+    {x: 1750, y: 300, w: 250, h: 25},
+
+    {x: 2300, y: 350, w: 220, h: 25},
+
+    {x: 2900, y: 290, w: 250, h: 25},
+
+    {x: 3600, y: 330, w: 250, h: 25}
+
+];
+
+
+/* ==================================================
+   INPUT
+================================================== */
+
+window.addEventListener("keydown", e => {
+
+    keys[e.key.toLowerCase()] = true;
+
+    if (
+        e.key === " " ||
+        e.key === "ArrowUp" ||
+        e.key.toLowerCase() === "w"
+    ) {
+
+        e.preventDefault();
+
+    }
+
+});
+
+
+window.addEventListener("keyup", e => {
+
+    keys[e.key.toLowerCase()] = false;
+
+});
+
+
+/* ==================================================
+   START
+================================================== */
+
+function startGame() {
+
+    document.getElementById("startScreen").style.display = "none";
+
+    canvas.style.display = "block";
+
+    gameRunning = true;
+
+    player.x = 120;
+    player.y = 300;
+
+    cameraX = 0;
+
+    showZoneIntro();
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+
+/* ==================================================
+   ZONE INTRO
+================================================== */
+
+function showZoneIntro() {
+
+    const text = document.getElementById("levelText");
+
+    text.classList.remove("zoneIntro");
+
+    void text.offsetWidth;
+
+    text.classList.add("zoneIntro");
+
+}
+
+
+/* ==================================================
+   UPDATE
+================================================== */
+
+function update() {
+
+    if (!gameRunning) return;
+
+
+    /* MOVE RIGHT */
+
+    if (
+        keys["arrowright"] ||
+        keys["d"]
+    ) {
+
+        player.vx += .5;
+
+    }
+
+
+    /* MOVE LEFT */
+
+    if (
+        keys["arrowleft"] ||
+        keys["a"]
+    ) {
+
+        player.vx -= .5;
+
+    }
+
+
+    /* FRICTION */
+
+    player.vx *= .88;
+
+
+    /* SPEED LIMIT */
+
+    if (player.vx > player.speed)
+        player.vx = player.speed;
+
+    if (player.vx < -player.speed)
+        player.vx = -player.speed;
+
+
+    /* JUMP */
+
+    if (
+        (
+            keys[" "] ||
+            keys["arrowup"] ||
+            keys["w"]
+        )
+        &&
+        player.grounded
+    ) {
+
+        player.vy = -player.jump;
+
+        player.grounded = false;
+
+    }
+
+
+    /* GRAVITY */
+
+    player.vy += .6;
+
+
+    player.x += player.vx;
+    player.y += player.vy;
+
+
+    /* GROUND */
+
+    player.grounded = false;
+
+    if (
+        player.y + player.height >= groundY
+    ) {
+
+        player.y =
+            groundY - player.height;
+
+        player.vy = 0;
+
+        player.grounded = true;
+
+    }
+
+
+    /* PLATFORMS */
+
+    for (const p of platforms) {
+
+        if (
+            player.x + player.width > p.x &&
+            player.x < p.x + p.w &&
+            player.y + player.height >= p.y &&
+            player.y + player.height <= p.y + 25 &&
+            player.vy >= 0
+        ) {
+
+            player.y =
+                p.y - player.height;
+
+            player.vy = 0;
+
+            player.grounded = true;
+
+        }
+
+    }
+
+
+    /* LEVEL LIMITS */
+
+    if (player.x < 0)
+        player.x = 0;
+
+    if (player.x > levelWidth - player.width)
+        player.x = levelWidth - player.width;
+
+
+    /* CAMERA */
+
+    cameraX =
+        player.x - W * .35;
+
+    if (cameraX < 0)
+        cameraX = 0;
+
+    if (cameraX > levelWidth - W)
+        cameraX = levelWidth - W;
+
+
+    /* COLLECT RINGS */
+
+    for (const ring of ringObjects) {
+
+        if (ring.collected)
+            continue;
+
+        const dx =
+            player.x + player.width / 2 - ring.x;
+
+        const dy =
+            player.y + player.height / 2 - ring.y;
+
+        const distance =
+            Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 35) {
+
+            ring.collected = true;
+
+            rings++;
+
+            score += 100;
+
+        }
+
+    }
+
+}
+
+
+/* ==================================================
+   DRAW BACKGROUND
+================================================== */
+
+function drawBackground() {
+
+    /* SKY */
+
+    ctx.fillStyle = "#58c9ff";
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    /* SUN */
+
+    ctx.fillStyle = "#ffe45c";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        W - 100,
+        100,
+        65,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* DISTANT HILLS */
+
+    ctx.fillStyle = "#39a94b";
+
+    for (
+        let x = -500 - cameraX * .25;
+        x < levelWidth;
+        x += 500
+    ) {
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            groundY + 30,
+            280,
+            Math.PI,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    /* CLOUDS */
+
+    ctx.fillStyle = "rgba(255,255,255,.8)";
+
+    for (
+        let x = -200 - cameraX * .15;
+        x < levelWidth;
+        x += 650
+    ) {
+
+        ctx.fillRect(
+            x,
+            90,
+            130,
+            25
+        );
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x + 35,
+            90,
+            35,
+            Math.PI,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x + 90,
+            90,
+            45,
+            Math.PI,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+}
+
+
+/* ==================================================
+   DRAW GROUND
+================================================== */
+
+function drawGround() {
+
+    ctx.fillStyle = "#45ad3e";
+
+    ctx.fillRect(
+        0,
+        groundY,
+        W,
+        H - groundY
+    );
+
+
+    /* GRASS */
+
+    ctx.fillStyle = "#70d94c";
+
+    ctx.fillRect(
+        0,
+        groundY,
+        W,
+        12
+    );
+
+
+    /* DIRT */
+
+    ctx.fillStyle = "#8a582b";
+
+    ctx.fillRect(
+        0,
+        groundY + 12,
+        W,
+        35
+    );
+
+
+    /* CHECKER PATTERN */
+
+    for (
+        let x = -cameraX % 50;
+        x < W;
+        x += 50
+    ) {
+
+        for (
+            let y = groundY + 47;
+            y < H;
+            y += 50
+        ) {
+
+            ctx.fillStyle =
+                ((Math.floor((x + cameraX) / 50) +
+                Math.floor(y / 50)) % 2 === 0)
+                ? "#8a582b"
+                : "#70451f";
+
+            ctx.fillRect(
+                x,
+                y,
+                50,
+                50
+            );
+
+        }
+
+    }
+
+}
+
+
+/* ==================================================
+   DRAW PLATFORMS
+================================================== */
+
+function drawPlatforms() {
+
+    for (const p of platforms) {
+
+        const x =
+            p.x - cameraX;
+
+        ctx.fillStyle = "#45ad3e";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            p.h
+        );
+
+        ctx.fillStyle = "#70d94c";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            7
+        );
+
+        ctx.fillStyle = "#8a582b";
+
+        ctx.fillRect(
+            x,
+            p.y + 7,
+            p.w,
+            p.h - 7
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   DRAW RINGS
+================================================== */
+
+function drawRings() {
+
+    for (const ring of ringObjects) {
+
+        if (ring.collected)
+            continue;
+
+        const x =
+            ring.x - cameraX;
+
+        const y =
+            ring.y;
+
+        ctx.strokeStyle = "#ffd92f";
+
+        ctx.lineWidth = 7;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            15,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.stroke();
+
+        ctx.strokeStyle = "#fff4a3";
+
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            15,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.stroke();
+
+    }
+
+}
+
+
+/* ==================================================
+   DRAW SONIC
+================================================== */
+
+function drawSonic() {
+
+    const x =
+        player.x - cameraX;
+
+    const y =
+        player.y;
+
+
+    ctx.save();
+
+    ctx.translate(
+        x + player.width / 2,
+        y + player.height / 2
+    );
+
+
+    /* BODY */
+
+    ctx.fillStyle = "#0879d1";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        5,
+        20,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* SPIKES */
+
+    ctx.beginPath();
+
+    ctx.moveTo(-10, -10);
+    ctx.lineTo(-32, -20);
+    ctx.lineTo(-18, 0);
+
+    ctx.moveTo(-15, -3);
+    ctx.lineTo(-38, 2);
+    ctx.lineTo(-17, 10);
+
+    ctx.moveTo(0, -13);
+    ctx.lineTo(-10, -35);
+    ctx.lineTo(8, -18);
+
+    ctx.fill();
+
+
+    /* FACE */
+
+    ctx.fillStyle = "#ffd2a0";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        8,
+        8,
+        16,
+        14,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* EYE */
+
+    ctx.fillStyle = "white";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        10,
+        -2,
+        6,
+        9,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.fillStyle = "#111";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        12,
+        -2,
+        3,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* NOSE */
+
+    ctx.fillStyle = "#111";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        20,
+        8,
+        3,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* SHOES */
+
+    ctx.fillStyle = "#e52c2c";
+
+    ctx.fillRect(
+        -20,
+        23,
+        22,
+        8
+    );
+
+    ctx.fillRect(
+        7,
+        23,
+        22,
+        8
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* ==================================================
+   HUD
+================================================== */
+
+function drawHUD() {
+
+    ctx.fillStyle = "white";
+
+    ctx.font = "bold 20px monospace";
+
+    ctx.fillText(
+        "SCORE",
+        25,
+        35
+    );
+
+    ctx.fillText(
+        String(score).padStart(6, "0"),
+        25,
+        60
+    );
+
+
+    ctx.fillText(
+        "RINGS",
+        25,
+        90
+    );
+
+    ctx.fillText(
+        String(rings).padStart(2, "0"),
+        25,
+        115
+    );
+
+
+    ctx.fillText(
+        "ZONE 1",
+        W - 120,
+        35
+    );
+
+}
+
+
+/* ==================================================
+   FINISH
+================================================== */
+
+function checkFinish() {
+
+    if (player.x > levelWidth - 300) {
+
+        gameRunning = false;
 
         setTimeout(() => {
 
-            title.innerText =
-                "COMING SOON";
+            alert(
+                "🏁 LEVEL COMPLETE!\n\n" +
+                "You reached the end of Green Hill Zone!"
+            );
 
-            text.innerText =
-                "The adventure is being prepared...";
-
-        }, 2000);
-
-    }
-
-
-    function showOptions() {
-
-        alert(
-            "OPTIONS\n\n" +
-            "🔊 Sound: ON\n" +
-            "⚡ Speed: MAXIMUM\n" +
-            "💙 Adventure: SECRET"
-        );
+        }, 100);
 
     }
 
+}
 
-    function showExtras() {
 
-        alert(
-            "EXTRAS\n\n" +
-            "???\n" +
-            "???\n" +
-            "???\n\n" +
-            "Some secrets are better discovered."
-        );
+/* ==================================================
+   GAME LOOP
+================================================== */
 
-    }
+function gameLoop() {
+
+    if (!gameRunning)
+        return;
+
+    update();
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+    drawBackground();
+
+    drawGround();
+
+    drawPlatforms();
+
+    drawRings();
+
+    drawSonic();
+
+    drawHUD();
+
+    checkFinish();
+
+    requestAnimationFrame(gameLoop);
+
+}
 
 </script>
 
