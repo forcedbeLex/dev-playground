@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SONIC</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(#1689e8, #58c9ff);
+            color: white;
+        }
+
+        /* CIELO */
+
+        .game {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* NUBES */
+
+        .cloud {
+            position: absolute;
+            width: 180px;
+            height: 60px;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.8;
+            animation: moveClouds 35s linear infinite;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: "";
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .cloud::before {
+            width: 80px;
+            height: 80px;
+            left: 25px;
+            bottom: 20px;
+        }
+
+        .cloud::after {
+            width: 100px;
+            height: 100px;
+            right: 20px;
+            bottom: 15px;
+        }
+
+        .cloud1 {
+            top: 12%;
+            left: -200px;
+        }
+
+        .cloud2 {
+            top: 30%;
+            left: -400px;
+            transform: scale(0.7);
+            animation-delay: 12s;
+        }
+
+        @keyframes moveClouds {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(130vw);
+            }
+        }
+
+        /* TÍTULO */
+
+        .title {
+            position: absolute;
+            top: 12%;
+            width: 100%;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: clamp(55px, 10vw, 130px);
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -8px;
+
+            color: #ffffff;
+
+            text-shadow:
+                5px 5px 0 #e6a700,
+                9px 9px 0 #0066b3,
+                13px 13px 0 #003c75;
+        }
+
+        .subtitle {
+            margin-top: -5px;
+            font-size: clamp(18px, 3vw, 30px);
+            font-weight: bold;
+            letter-spacing: 8px;
+            color: #fff;
+            text-shadow: 3px 3px #00528e;
+        }
+
+        /* MENÚ */
+
+        .menu {
+            position: absolute;
+            z-index: 10;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            width: min(350px, 80%);
+        }
+
+        .menu button {
+            border: 4px solid white;
+            border-radius: 12px;
+
+            padding: 15px;
+
+            background: #0879d1;
+            color: white;
+
+            font-size: 22px;
+            font-weight: 900;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 6px 0 #004c8d,
+                0 0 15px rgba(0,0,0,0.25);
+
+            transition: 0.15s;
+        }
+
+        .menu button:hover {
+            transform: scale(1.06);
+            background: #1498ff;
+        }
+
+        .menu button:active {
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 #004c8d;
+        }
+
+        /* SUELO */
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+
+            width: 100%;
+            height: 22%;
+
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    #4fbd42 0px,
+                    #4fbd42 25px,
+                    #3aa634 25px,
+                    #3aa634 50px
+                );
+
+            border-top: 12px solid #8b5a2b;
+        }
+
+        .grass {
+            position: absolute;
+            top: -18px;
+            left: 0;
+
+            width: 100%;
+            height: 20px;
+
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    #20a936 0px,
+                    #20a936 20px,
+                    #32c94b 20px,
+                    #32c94b 40px
+                );
+        }
+
+        /* ANILLOS */
+
+        .rings {
+            position: absolute;
+            bottom: 17%;
+            left: 8%;
+
+            display: flex;
+            gap: 20px;
+        }
+
+        .ring {
+            width: 38px;
+            height: 38px;
+
+            border: 7px solid #ffd92f;
+            border-radius: 50%;
+
+            box-shadow:
+                inset 0 0 0 2px #f5a900,
+                0 0 8px rgba(255, 220, 40, 0.7);
+
+            animation: ringFloat 1.5s ease-in-out infinite alternate;
+        }
+
+        .ring:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .ring:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes ringFloat {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-12px);
+            }
+        }
+
+        /* COPYRIGHT */
+
+        .copyright {
+            position: absolute;
+            bottom: 12px;
+            width: 100%;
+            text-align: center;
+
+            font-size: 12px;
+            opacity: 0.7;
+
+            z-index: 20;
+        }
+
+        /* PANTALLA NEGRA */
+
+        .screen {
+            position: fixed;
+            inset: 0;
+
+            background: #050505;
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            z-index: 100;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .loading {
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .loading h2 {
+            font-size: 35px;
+        }
+
+        .loading p {
+            color: #777;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+
+    <div class="title">
+
+        <h1>SONIC</h1>
+
+        <div class="subtitle">
+            THE HEDGEHOG
+        </div>
+
+    </div>
+
+    <div class="menu">
+
+        <button onclick="startGame()">
+            ▶ START GAME
+        </button>
+
+        <button onclick="showMessage()">
+            ⚙ OPTIONS
+        </button>
+
+        <button onclick="showCredits()">
+            ★ CREDITS
+        </button>
+
+    </div>
+
+    <div class="rings">
+
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+
+    </div>
+
+    <div class="ground">
+
+        <div class="grass"></div>
+
+    </div>
+
+    <div class="copyright">
+        EXPERIMENTAL BUILD • 2026
+    </div>
+
+</div>
+
+<div id="screen" class="screen">
+
+    <div class="loading">
+
+        <h2 id="screenTitle">
+            LOADING...
+        </h2>
+
+        <p id="screenText">
+            Please wait...
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function startGame() {
+
+    document.getElementById("screen").classList.add("active");
+
+    document.getElementById("screenTitle").innerText =
+        "GREEN HILL ZONE";
+
+    document.getElementById("screenText").innerText =
+        "Preparing level...";
+
+    setTimeout(() => {
+
+        document.getElementById("screenTitle").innerText =
+            "COMING SOON";
+
+        document.getElementById("screenText").innerText =
+            "The adventure is being prepared...";
+
+    }, 1800);
+
+}
+
+
+function showMessage() {
+
+    alert("SYSTEM OPTIONS\n\nNothing suspicious here. 👀");
+
+}
+
+
+function showCredits() {
+
+    alert("SONIC SECRET PROJECT\n\nExperimental build • 2026");
+
+}
+
+</script>
+
+</body>
+</html>
